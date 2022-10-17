@@ -1,4 +1,4 @@
-# note-pad
+# Note Pad
 
 This is an app where you can take notes, check it!
 
