@@ -3,14 +3,12 @@ let noteText;
 let saveNoteBtn;
 let newNoteBtn;
 let noteList;
-let deleteNotes;
 
 if (window.location.pathname === "/notes") {
   noteTitle = document.querySelector(".note-title");
   noteText = document.querySelector(".note-textarea");
   saveNoteBtn = document.querySelector(".save-note");
   newNoteBtn = document.querySelector(".new-note");
-  deleteNotes = document.querySelectorAll(".delete-note");
   noteList = document.querySelectorAll(".list-container .list-group");
 }
 
@@ -45,7 +43,7 @@ const saveNote = (note) =>
   });
 
 const deleteNote = (id) =>
-  fetch(`/api/notes/${id}`, {
+  fetch(`/api/notes/:${id}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -54,8 +52,8 @@ const deleteNote = (id) =>
 
 const renderActiveNote = () => {
   hide(saveNoteBtn);
-
-  if (activeNote.id) {
+  console.log(activeNote);
+  if (activeNote.note_id) {
     noteTitle.setAttribute("readonly", true);
     noteText.setAttribute("readonly", true);
     noteTitle.value = activeNote.title;
@@ -85,12 +83,15 @@ const handleNoteDelete = (e) => {
   e.stopPropagation();
 
   const note = e.target;
-  const noteId = JSON.parse(note.parentElement.getAttribute("data-note")).id;
+  const noteId = JSON.parse(
+    note.parentElement.getAttribute("data-note")
+  ).note_id;
 
-  if (activeNote.id === noteId) {
+  if (activeNote.note_id === noteId) {
     activeNote = {};
   }
-
+  console.log(note.parentElement.getAttribute("data-note"));
+  console.log(noteId);
   deleteNote(noteId).then(() => {
     getAndRenderNotes();
     renderActiveNote();
@@ -176,7 +177,6 @@ const renderNoteList = async (notes) => {
 const getAndRenderNotes = () => getNotes().then(renderNoteList);
 
 if (window.location.pathname === "/notes") {
-  // deleteNotes.addEventListener("click", handleNoteDelete);
   saveNoteBtn.addEventListener("click", handleNoteSave);
   newNoteBtn.addEventListener("click", handleNewNoteView);
   noteTitle.addEventListener("keyup", handleRenderSaveBtn);

@@ -31,6 +31,4 @@ const readAndAppend = (content, file) => {
   });
 };
 
-const deleteNote = (note) => {};
-
 module.exports = { readFromFile, writeToFile, readAndAppend };

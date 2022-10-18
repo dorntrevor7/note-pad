@@ -1,28 +1,50 @@
-const notes = require("express").Router();
-const { readFromFile, readAndAppend } = require("../helpers/fsUtils");
+const router = require("express").Router();
+const db = require("../db/notes.json");
+const {
+  readAndAppend,
+  readFromFile,
+  writeToFile,
+} = require("../helpers/fsUtils");
+const uuid = require("../helpers/uuid");
 
-// GET Route for retrieving all the notes
-notes.get("/", (req, res) => {
-  readFromFile("./db/notes.json").then((data) => res.json(JSON.parse(data)));
-});
+// GET Route for retrieving all the feedback
+router.get("/", (req, res) =>
+  readFromFile("./db/notes.json").then((data) => res.json(JSON.parse(data)))
+);
 
-// POST Route for a new UX/UI tip
-notes.post("/", (req, res) => {
-  console.log(req.body);
-
+// POST Route for submitting feedback
+router.post("/", (req, res) => {
+  // Destructuring assignment for the items in req.body
   const { title, text } = req.body;
 
-  if (req.body) {
+  // If all the required properties are present
+  if ((title, text)) {
+    // Variable for the object we will save
     const newNote = {
       title,
       text,
+      note_id: uuid(),
     };
 
     readAndAppend(newNote, "./db/notes.json");
-    res.json(`Tip added successfully 🚀`);
+
+    const response = {
+      status: "success",
+      body: newNote,
+    };
+
+    res.json(response);
   } else {
-    res.error("Error in adding tip");
+    res.json("Error in posting feedback");
   }
 });
 
-module.exports = notes;
+router.delete(`/:note_id`, function (req, res) {
+  const id = req.params.note_id;
+  db.splice(id, 1);
+  if (id === -1) return res.status(404).json({});
+
+  readFromFile("./db/notes.json").then((data) => res.json(JSON.parse(data)));
+});
+
+module.exports = router;

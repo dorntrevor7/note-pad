@@ -1,7 +1,7 @@
 const express = require("express");
 const path = require("path");
 const { clog } = require("./middleware/clog");
-const notes = require("./routes/index.js");
+const noteRoutes = require("./routes");
 
 const PORT = process.env.PORT || 3001;
 
@@ -13,8 +13,7 @@ app.use(clog);
 // Middleware for parsing JSON and urlencoded form data
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use("/api", notes);
-
+app.use("/api", noteRoutes);
 app.use(express.static("public"));
 
 // GET Route for homepage
